@@ -70,7 +70,7 @@ def scrap (link):
                 elem_magn = result
                 continue
             
-        page_dic_lst.append((elem_name, elem_link, elem_magn, elem_cate, elem_size, elem_date, elem_seeds))
+        page_dic_lst.append([elem_name, elem_link, elem_magn, elem_cate, elem_size, elem_date, elem_seeds])
 
     return page_dic_lst
     #print(f"Total elements found: {len(elemet_block_lst)}")

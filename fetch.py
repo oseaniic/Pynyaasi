@@ -16,7 +16,6 @@ def scrap (link):
     for block in elemet_block_lst:   # Process each elelement
         block_lines = block.splitlines()  
         #print()
-        #print()
         ##print(block)
         elem_name = ''  # Reseting the values for each element
         elem_link = ''
@@ -66,7 +65,8 @@ def scrap (link):
                 final_parts = second_part.split('">')
                 result = final_parts[0]
                 
-                #print(result)
+                print()
+                print(result)
                 elem_magn = result
                 continue
             

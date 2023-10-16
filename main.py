@@ -4,10 +4,10 @@ import fetch
 # Base URL: https://nyaa.si/?f=0&c=2_0&q=
 
 def query():
-    pages = 2
+    pages = 1
     sort= 'Completed'   # Completed/Seeds/Default(Date)
     category = 'Any'    # Any/Lossless/Lossy
-    whitelist= ['fate']
+    whitelist= ['fate','anime']
     blacklist= ['k-pop','halo']
 
     base_url = 'https://nyaa.si/?f=0&c=2_0&q='  # Category + base + whitelist + blacklist + sort + pagenum
@@ -33,7 +33,7 @@ def query():
     
     for i in range(pages):
         numered_page = base_url + '&p=' + str(i+1)
-        #print(numered_page)
+        print(numered_page)
         query_page_lst.append(numered_page)
 
     full_fetch(query_page_lst)
@@ -47,9 +47,10 @@ def full_fetch(query_page_lst):
         if single_page_songs_lst:
             whole_query_songs_lst.extend(single_page_songs_lst)
 
-    for i in whole_query_songs_lst:
+    for i, song in enumerate(whole_query_songs_lst):
         print()
-        print(i)
+        print(f"Working on object {i + 1} out of {len(whole_query_songs_lst)}")
+        print(song[2])
         print()
 
 

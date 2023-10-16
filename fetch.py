@@ -65,8 +65,8 @@ def scrap (link):
                 final_parts = second_part.split('">')
                 result = final_parts[0]
                 
-                print()
-                print(result)
+                #print()
+                #print(result)
                 elem_magn = result
                 continue
             

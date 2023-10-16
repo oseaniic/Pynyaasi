@@ -27,7 +27,7 @@ def scrap (link):
         elem_seeds = ''
 
         for line in block_lines:
-
+            line = line.replace("amp;", "") # Remove the amp; thing
             if 'title="Audio - Lossless"' in line or 'title="Audio - Lossy"' in line:   # Category
                 parts = line.split('title="Audio - ')
                 second_part = parts[1]
@@ -50,7 +50,7 @@ def scrap (link):
                 #continue   # Since the link and tittle are in the same line
 
             if 'title="' in line and not 'comments' in line:   # Title
-                line = line.replace("amp;", "") # Remove the amp; thing
+                
                 parts = line.split('title="')
                 second_part = parts[1]
                 final_parts = second_part.split('"')
@@ -63,7 +63,7 @@ def scrap (link):
             if 'magnet' in line:   # Magnet
                 parts = line.split('<a href="')
                 second_part = parts[1]
-                final_parts = second_part.split('&amp')
+                final_parts = second_part.split('">')
                 result = final_parts[0]
                 
                 #print(result)

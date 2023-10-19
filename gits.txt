@@ -10,3 +10,4 @@ git pull
 
 git remote remove origin
 git remote add origin https://USERNAME:TOKEN@github.com/USERNAME/REPOSITORY.git
+git remote add origin https://oseaniic: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@github.com/oseaniic/PortaColly

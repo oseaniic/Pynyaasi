@@ -1,23 +1,41 @@
 import os
 import subprocess
+import re
+
+max_idle_time = 60 # In seconds
+idling = False
+percentage = 0
+
 
 if not os.path.exists('Downloads'):
     os.mkdir('Downloads')
 
-magnet = r'magnet:?xt=urn:btih:41d4a9b38e8336ce5f857b3effb948660bdc78b3&dn=%5BTSDM%E8%87%AA%E8%B3%BC%5D%5B231013%5DTV%E3%82%A2%E3%83%8B%E3%83%A1%E3%80%8E%E3%82%A6%E3%83%9E%E5%A8%98%20%E3%83%97%E3%83%AA%E3%83%86%E3%82%A3%E3%83%BC%E3%83%80%E3%83%BC%E3%83%93%E3%83%BC%20Season%203%E3%80%8FOP%20%26%20ED%E3%80%8C%E3%82%BD%E3%82%B7%E3%83%86%E3%83%9F%E3%83%B3%E3%83%8A%E3%83%8E%E3%80%8D%E3%80%8C%E3%82%A2%E3%82%B3%E3%82%AC%E3%83%ACChallenge%20Dash%21%21%E3%80%8D%5B320K%5D&tr=http%3A%2F%2Fnyaa.tracker.wf%3A7777%2Fannounce&tr=udp%3A%2F%2Fopen.stealth.si%3A80%2Fannounce&tr=udp%3A%2F%2Ftracker.opentrackr.org%3A1337%2Fannounce&tr=udp%3A%2F%2Fexodus.desync.com%3A6969%2Fannounce&tr=udp%3A%2F%2Ftracker.torrent.eu.org%3A451%2Fannounce'
+magnet = r"magnet:?xt=urn:btih:a32e902c94764558ccaf8e92f3820f6daed1303b&dn=%5BTSDM%E8%87%AA%E8%B3%BC%5D%5B231005%5DTV%E3%82%A2%E3%83%8B%E3%83%A1%E3%80%8ESPY%C3%97FAMILY%20Season2%E3%80%8FOP%E4%B8%BB%E9%A1%8C%E6%AD%8C%E3%80%8C%E3%82%AF%E3%83%A9%E3%82%AF%E3%80%8D%EF%BC%8FAdo%5BFLAC%5D&tr=http%3A%2F%2Fnyaa.tracker.wf%3A7777%2Fannounce&tr=udp%3A%2F%2Fopen.stealth.si%3A80%2Fannounce&tr=udp%3A%2F%2Ftracker.opentrackr.org%3A1337%2Fannounce&tr=udp%3A%2F%2Fexodus.desync.com%3A6969%2Fannounce&tr=udp%3A%2F%2Ftracker.torrent.eu.org%3A451%2Fannounce"
 
 executable_path = 'aria\\aria2c.exe'
 download_location = 'C:\\Users\\sean\\Documents\\Projs\\Pynyaasi\\Downloads'
 
-completed_process = subprocess.run([executable_path, f'--dir={download_location}', magnet], text=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+# Create a subprocess and capture the output in real-time
+process = subprocess.Popen([executable_path, f'--dir={download_location}', f'--seed-time=0', f'--file-allocation=none', magnet], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, encoding='utf-8')
 
-# Access the standard output and error output
-stdout_output = completed_process.stdout
-stderr_output = completed_process.stderr
+# Read the output line by line and print it in real-time
+for line in process.stdout:
+    if len(re.sub(r'\s', '', line)) > 0:            # Only print lines that have any content, rather than empty ones
+        if '%)' in line:
+            parts = line.split('(')
+            second_part = parts[1]
+            third_part = second_part.split('%')
+            percentage = third_part[0]
+            print(f"Python: {percentage}")
+        print(f"Standard Output: {line}", end='')
 
-# Print the output
-print("Standard Output:")
-print(stdout_output)
+for line in process.stderr:
+    if line:
+        print(f"Error Output: {line}", end='')
 
-print("Error Output:")
-print(stderr_output)
+# Wait for the process to finish
+process.wait()
+
+# Optionally, get the return code
+return_code = process.returncode
+print(f"Return Code: {return_code}")

@@ -3,7 +3,42 @@ from bs4 import BeautifulSoup
 
 # A page in this website normally has 75 torrents listed per page
 
-def fetch (link):
+def query_setup():      # Get the page list to scrap based on the criteria and begin the query_start function
+    pages = 1
+    sort= 'Seeds'   # Completed/Seeds/Default(Date)
+    category = 'Any'    # Any/Lossless/Lossy
+    whitelist= []
+    blacklist= ['k-pop','fate']
+
+    base_url = 'https://nyaa.si/?f=0&c=2_0&q='  # Category + base + whitelist + blacklist + sort + pagenum
+
+    query_page_lst = []
+
+    if not category == 'Any':
+        if category == 'Lossless':
+            cat_term = '&c=2_1'
+        else:
+            cat_term = '&c=2_2'
+        base_url = base_url.replace('&c=2_0', cat_term)
+    if whitelist:
+        for element in whitelist:
+            base_url = base_url + '+' + element
+    if blacklist:
+        for element in blacklist:
+            base_url = base_url + '+' + '-' + element
+    if sort == 'Completed':
+        base_url = base_url + '&s=downloads&o=desc'
+    elif sort == 'Seeds':
+        base_url = base_url + '&s=seeders&o=desc'
+    
+    print('Page list:')
+    for i in range(pages):
+        numered_page = base_url + '&p=' + str(i+1)
+        print(numered_page)
+        query_page_lst.append(numered_page)
+    query_run(query_page_lst)
+
+def fetch (link):                   # Fetch all torrents from the URL given
 
     discard_abandoned = True        # Wether to include or not torrents with no seeds
     
@@ -13,6 +48,7 @@ def fetch (link):
 
     elemet_block_lst = []   # all tr elements
     page_dic_lst = []   #each tr element broken down into the following categories:
+    page_dic_lst_full = []
 
     for tr in tr_elements:
         tr = str(tr)            # Convert from HTMLy text to regular string
@@ -110,59 +146,26 @@ def fetch (link):
         
         if has_seeders:     # Only append the torrent if it has any seeders
             page_dic_lst.append([elem_name, elem_link, elem_magn, elem_cate, elem_size, elem_date, elem_seeds, elem_leech, elem_completions])
+        page_dic_lst_full.append([elem_link])
+        
 
-    return page_dic_lst
+    return page_dic_lst,page_dic_lst_full
 
-def query_setup():
-    pages = 1
-    sort= 'Seeds'   # Completed/Seeds/Default(Date)
-    category = 'Any'    # Any/Lossless/Lossy
-    whitelist= []
-    blacklist= ['k-pop','halo']
-
-    base_url = 'https://nyaa.si/?f=0&c=2_0&q='  # Category + base + whitelist + blacklist + sort + pagenum
-
-    query_page_lst = []
-
-    if not category == 'Any':
-        if category == 'Lossless':
-            cat_term = '&c=2_1'
-        else:
-            cat_term = '&c=2_2'
-        base_url = base_url.replace('&c=2_0', cat_term)
-    if whitelist:
-        for element in whitelist:
-            base_url = base_url + '+' + element
-    if blacklist:
-        for element in blacklist:
-            base_url = base_url + '+' + '-' + element
-    if sort == 'Completed':
-        base_url = base_url + '&s=downloads&o=desc'
-    elif sort == 'Seeds':
-        base_url = base_url + '&s=seeders&o=desc'
-    
-    for i in range(pages):
-        numered_page = base_url + '&p=' + str(i+1)
-        print(numered_page)
-        query_page_lst.append(numered_page)
-    query_run(query_page_lst)
-
-def query_run(query_page_lst):
+def query_run(query_page_lst):      # Run the fetch function for each link
 
     whole_query_songs_lst = []
 
     for element in query_page_lst:
-        single_page_songs_lst = fetch(element)
+        single_page_songs_lst , page_dic_lst_full = fetch(element)
         if single_page_songs_lst:
             whole_query_songs_lst.extend(single_page_songs_lst)
 
-    for i, song in enumerate(whole_query_songs_lst):
-        print()
-        print(f"Working on object {i + 1} out of {len(whole_query_songs_lst)}")
-        print(song)
-        print()
-        pass
-
-
+    print(f'Found {len(whole_query_songs_lst)} healthy torrents out of {len(page_dic_lst_full)} torrents.')
+    #for i, song in enumerate(whole_query_songs_lst):
+    #    print()
+    #    print(f"Working on object {i + 1} out of {len(whole_query_songs_lst)}")
+    #    print(song)
+    #    print()
+    #    pass
 
 query_setup()

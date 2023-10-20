@@ -12,11 +12,11 @@ import ctypes
 # A page in this website normally has 75 torrents listed per page
 
 def query_setup():      # Get the page list to scrap based on the criteria and begin the query_start function
-    pages = 1
+    pages = 15
     sort= 'Completed'   # Completed/Seeds/Default(Date)
     category = 'Any'    # Any/Lossless/Lossy
     whitelist= []
-    blacklist= ['k-pop','english','vtuber','hololive','gawr']
+    blacklist= ['k-pop','english','vtuber','hololive','gawr','fate','IDOLM@STER','bgm']
 
     base_url = 'https://nyaa.si/?f=0&c=2_0&q='  # Category + base + whitelist + blacklist + sort + pagenum
 
@@ -171,11 +171,20 @@ def query_run(query_page_lst):      # Run the fetch function for each link
     print(f'Found {len(whole_query_songs_lst)} healthy torrents out of {len(page_dic_lst_full)} torrents.')
     print('Bulk Downloading..')
 
+    success_count = 0
+    failed_count = 0
+
     for i, song in enumerate(whole_query_songs_lst):
         print()
         print(f"Working on object {i + 1} out of {len(whole_query_songs_lst)}")
         print(f"Magnet link: {song[1]}, Size: {song[4]}")
-        download(song[2])
+        status = download(song[2])
+        if status:
+            if status == 'success':
+                success_count = success_count + 1
+            elif status == 'failed':
+                failed_count = failed_count +1
+        print(f'Stats so far: succesful: {success_count} failed: {failed_count}')
         #print()
         #pass
 
@@ -190,9 +199,6 @@ def download(magnet):
 
     download_started = False
     download_failed = False
-
-    success=0
-    failed=0
 
     #magnet = "magnet:?xt=urn:btih:fd0a65b73d1725a95a385e160f34a6a7ab0198db&dn=%5BTSDM%E8%87%AA%E8%B3%BC%5D%5BHi-Res%5D%5B230412%5DTV%E3%82%A2%E3%83%8B%E3%83%A1%E3%80%8E%E6%8E%A8%E3%81%97%E3%81%AE%E5%AD%90%E3%80%8FOP%E4%B8%BB%E9%A2%98%E6%AD%8C%E3%80%8C%E3%82%A2%E3%82%A4%E3%83%89%E3%83%AB%E3%80%8D%EF%BC%8FYOASOBI%5B96kHz%2F24bit%5D%5BFLAC%5D&tr=http%3A%2F%2Fnyaa.tracker.wf%3A7777%2Fannounce&tr=udp%3A%2F%2Fopen.stealth.si%3A80%2Fannounce&tr=udp%3A%2F%2Ftracker.opentrackr.org%3A1337%2Fannounce&tr=udp%3A%2F%2Fexodus.desync.com%3A6969%2Fannounce&tr=udp%3A%2F%2Ftracker.torrent.eu.org%3A451%2Fannounce"
 
@@ -239,7 +245,7 @@ def download(magnet):
                     time_idle_total = abs(time_idle_start - time_last_active)
                     time_idle_left = int(max_idle_time - time_idle_total)  
 
-                    set_window_title(f'Download Progress: {percentage}% Idle time remaining: {time_idle_left} Success: {success} Failed: {failed}')
+                    set_window_title(f'Download Progress: {percentage}% Idle time remaining: {time_idle_left}')
 
                     if time_idle_left < 1:
                         print(f"DL: Idlied for too long, exiting process...")
@@ -279,7 +285,7 @@ def download(magnet):
                     timer_current_time = time.time()
                     timer_remaining = int(max_idle_time - abs(timer_idle_start - timer_current_time))
 
-                    set_window_title(f'Download Progress: {percentage}% Idle time remaining: {timer_remaining} Success: {success} Failed: {failed}')
+                    set_window_title(f'Download Progress: {percentage}% Idle time remaining: {timer_remaining}')
 
                     if timer_remaining < 1:
                         print(f"DL: Idlied for too long, exiting process...")
@@ -301,10 +307,13 @@ def download(magnet):
 
     
     if not download_failed:
-        print(f"DL: Download successful, return code: {return_code}")
-        success = success + 1
+        print(f"DL: Download successful, return code: {return_code}, at {percentage}% done")
+        return 'success'
     else:
-        print(f"DL: Download FAILED, return code: {return_code}")
-        failed = failed + 1
+        if download_started:
+            print(f"DL: DOWNLOAD FAILED, return code: {return_code}, at {percentage}% done")
+        else:
+            print(f"DL: Download FAILED, return code: {return_code}")
+        return 'failed'
 
 query_setup()

@@ -16,7 +16,7 @@ def query_setup():      # Get the page list to scrap based on the criteria and b
     sort= 'Completed'   # Completed/Seeds/Default(Date)
     category = 'Any'    # Any/Lossless/Lossy
     whitelist= []
-    blacklist= ['k-pop','english','vtuber','hololive','gawr','fate','IDOLM@STER','bgm']
+    blacklist= ['k-pop','english','vtuber','hololive','gawr','fate','IDOLM@STER','bgm', 'dream!', 'nier']
 
     base_url = 'https://nyaa.si/?f=0&c=2_0&q='  # Category + base + whitelist + blacklist + sort + pagenum
 
@@ -190,7 +190,7 @@ def query_run(query_page_lst):      # Run the fetch function for each link
 
 
 def download(magnet):
-    max_idle_time = 180 # In seconds
+    max_idle_time = 120 # In seconds
     idle_time_left = 0
     idling = False
     percentage = 0
@@ -214,7 +214,7 @@ def download(magnet):
         folder = os.path.dirname(archive_path)
 
         try:
-            patoolib.extract_archive(archive_path, outdir=folder)
+            patoolib.extract_archive(archive_path, outdir=folder, overwrite=True)
             print(f"Extraction successful for {archive_path}")
             os.remove(archive_path)  # Remove the archive file if extraction was successful
         except patoolib.util.PatoolError as e:

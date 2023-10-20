@@ -185,6 +185,7 @@ def query_run(query_page_lst):      # Run the fetch function for each link
             elif status == 'failed':
                 failed_count = failed_count +1
         print(f'Stats so far: succesful: {success_count} failed: {failed_count}')
+        #exit()
         #print()
         #pass
 
@@ -212,15 +213,14 @@ def download(magnet):
 
     def extract_archive(archive_path):
         folder = os.path.dirname(archive_path)
-
         try:
-            patoolib.extract_archive(archive_path, outdir=folder, overwrite=True)
+            patoolib.extract_archive(archive_path, outdir=folder)
             print(f"Extraction successful for {archive_path}")
             os.remove(archive_path)  # Remove the archive file if extraction was successful
         except patoolib.util.PatoolError as e:
             print(f"Error extracting {archive_path}: {str(e)}")
             pass  # Do not delete the archive file if there was an error during extraction
-    
+        
     def set_window_title(title):
         ctypes.windll.kernel32.SetConsoleTitleW(title)
 

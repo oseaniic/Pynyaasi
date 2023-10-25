@@ -1,1 +1,1 @@
-Personal scrapping project for nyaa.si, to get music torrent magnets
+Personal scrapping project for nyaa.si, to get music torrent magnets.
